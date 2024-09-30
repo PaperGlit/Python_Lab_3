@@ -47,7 +47,7 @@ class Console:
                         file_name += ".txt"
                     try:
                         file_upload.write(ftext, file_name)
-                        print("Text was uploaded successfully")
+                        print("The art was uploaded successfully")
                         break
                     except IOError:
                         print("An error occurred during file upload, please try again")
