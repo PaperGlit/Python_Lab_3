@@ -2,15 +2,14 @@ import random
 import textwrap
 import GlobalVariables as Global
 from BLL.classes.ascii import Ascii
+from pyfiglet import FigletFont, figlet_format
 import DAL.functions.upload_to_file as file_upload
-from pyfiglet import FigletFont, print_figlet, figlet_format
 
 
 class Console:
     @staticmethod
     def prompt():
-        print_figlet("ASCIIFY", font=random.choice(FigletFont.getFonts()),
-                     colors=random.choice(Global.colors), width=Ascii.verify_width())
+        Ascii.print("ASCIIFY", True)
         while True:
             prompt = input("1 - Enter text\n"
                            "2 - Select font automatically\n"
@@ -38,38 +37,39 @@ class Console:
     @staticmethod
     def enter_text():
         text = input("Enter text: ")
-        print_figlet(text, font=Global.font, colors=Global.color, width=Ascii.verify_width())
+        ftext = Ascii.print(text)
         save_prompt = input("Do you want to save the text? (y/n): ").lower()
         if save_prompt == "y":
             while True:
                 file_name = input("Enter file name: ")
                 if file_name.strip() != "":
-                    ftext = figlet_format(text, font=Global.font, width=Ascii.verify_width())
                     if not file_name.endswith(".txt"):
                         file_name += ".txt"
-                    file_upload.write(ftext, file_name)
-                    print("Text was uploaded successfully")
-                    break
+                    try:
+                        file_upload.write(ftext, file_name)
+                        print("Text was uploaded successfully")
+                        break
+                    except IOError:
+                        print("An error occurred during file upload, please try again")
                 else:
                     print("Please enter a valid file name")
 
     @staticmethod
     def auto_font():
         text = input("Enter text: ")
-        symbols = input("Enter symbols that should be in the ASCII art: ")
+        symbols = input("Enter a set of characters that should be in the ASCII art: ")
         font_symbols = set(symbols) | {" ", "\n"}
         fonts = FigletFont.getFonts()
         fonts.remove('mshebrew210')
-        while fonts:
-            random_font = random.choice(fonts)
-            random_art = figlet_format(text, font=random_font, width=Ascii.verify_width())
+        random.shuffle(fonts)
+        for font in fonts:
+            random_art = figlet_format(text, font=font, width=Global.width)
             random_art_chars = set(random_art)
             if all(char in font_symbols for char in random_art_chars):
-                print(f"Found font: {random_font}")
-                print_figlet(text, font=random_font, colors=Global.color, width=Ascii.verify_width())
+                print("Found font:" + font)
+                Global.font = font
+                Ascii.print(text)
                 return
-            else:
-                fonts.remove(random_font)
         print("No fonts were found, please try again with a wider set of characters")
 
     @staticmethod
@@ -79,10 +79,12 @@ class Console:
                          "Your choice: ")
         if new_font in FigletFont.getFonts():
             Global.font = new_font
+            print("Font changed successfully")
         elif new_font.lower() == "font":
-            print("Available fonts:\n" + textwrap.fill(", ".join(FigletFont.getFonts()), width=Ascii.verify_width()))
-        elif new_font == "random":
+            print("Available fonts:\n" + textwrap.fill(", ".join(FigletFont.getFonts()), width=Global.width))
+        elif new_font.lower() == "random":
             Global.font = random.choice(FigletFont.getFonts())
+            print("Randomly selected font: " + Global.font)
         else:
             print("Invalid font")
 
@@ -94,7 +96,7 @@ class Console:
                       "Your choice: ")
             try:
                 width = int(width_prompt)
-                Global.width = width
+                Global.width = Ascii.verify_width(width)
                 print("Width changed successfully")
             except ValueError:
                 print("Please enter an integer")
@@ -116,18 +118,31 @@ class Console:
         color_prompt = input("Enter the color of your ASCII art:\n"
                              "1 - Red\n"
                              "2 - Green\n"
-                             "3 - Blue\n"
-                             "4 - Yellow\n"
-                             "5 - Cyan\n"
+                             "3 - Yellow\n"
+                             "4 - Blue\n"
+                             "5 - Magenta\n"
+                             "6 - Cyan\n"
+                             "7 - Light gray\n"
                              "0 - Default\n"
                              "Your choice: ")
-        try:
-            color = int(color_prompt)
-            if color in Global.colors:
-                Global.color = Global.colors[color]
-                print("Color changed successfully")
-            else:
+        match color_prompt:
+            case "1":
+                Global.color = "\033[31m"
+            case "2":
+                Global.color = "\033[32m"
+            case "3":
+                Global.color = "\033[33m"
+            case "4":
+                Global.color = "\033[34m"
+            case "5":
+                Global.color = "\033[35m"
+            case "6":
+                Global.color = "\033[36m"
+            case "7":
+                Global.color = "\033[37m"
+            case "0":
+                Global.color = "\033[39m"
+            case _:
                 print("Invalid color choice, please try again.")
-        except ValueError:
-            print("Please enter an integer")
-
+                return
+        print("Color changed successfully")

@@ -1,5 +1,11 @@
-font = 'slant'
-width = 0
+import os
+
+
+try:
+    width = os.get_terminal_size().columns
+except OSError:
+    width = 220
 height = 0
-color = "DEFAULT"
-colors = {0: "DEFAULT", 1: "RED", 2: "GREEN", 3: "BLUE", 4: "YELLOW", 5: "CYAN"}
+font = 'slant'
+color = "\033[39m"
+color_reset = "\033[0m"
