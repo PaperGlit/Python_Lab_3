@@ -61,6 +61,7 @@ class Console:
         font_symbols = set(symbols) | {" ", "\n"}
         fonts = FigletFont.getFonts()
         fonts.remove('mshebrew210')
+        fonts.remove('runic')
         random.shuffle(fonts)
         for font in fonts:
             random_art = figlet_format(text, font=font, width=Global.width)
