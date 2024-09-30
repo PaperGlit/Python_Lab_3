@@ -1,9 +1,9 @@
 import random
 import textwrap
 import GlobalVariables as Global
-import DL.functions.upload_to_file as file_upload
 from BLL.classes.ascii import Ascii
-from pyfiglet import FigletFont, print_figlet, Figlet, figlet_format
+import DAL.functions.upload_to_file as file_upload
+from pyfiglet import FigletFont, print_figlet, figlet_format
 
 
 class Console:
@@ -13,21 +13,24 @@ class Console:
                      colors=random.choice(Global.colors), width=Ascii.verify_width())
         while True:
             prompt = input("1 - Enter text\n"
-                           "2 - Change font\n"
-                           "3 - Current font\n"
-                           "4 - Change width and height\n"
-                           "5 - Change color\n"
+                           "2 - Select font automatically\n"
+                           "3 - Change font\n"
+                           "4 - Current font\n"
+                           "5 - Change width and height\n"
+                           "6 - Change color\n"
                            "Your choice: ")
             match prompt:
                 case "1":
                     Console.enter_text()
                 case "2":
-                    Console.change_font()
+                    Console.auto_font()
                 case "3":
-                    print("Current font: " + Global.font)
+                    Console.change_font()
                 case "4":
-                    Console.change_width_and_height()
+                    print("Current font: " + Global.font)
                 case "5":
+                    Console.change_width_and_height()
+                case "6":
                     Console.change_color()
                 case _:
                     return
@@ -49,6 +52,25 @@ class Console:
                     break
                 else:
                     print("Please enter a valid file name")
+
+    @staticmethod
+    def auto_font():
+        text = input("Enter text: ")
+        symbols = input("Enter symbols that should be in the ASCII art: ")
+        font_symbols = set(symbols) | {" ", "\n"}
+        fonts = FigletFont.getFonts()
+        fonts.remove('mshebrew210')
+        while fonts:
+            random_font = random.choice(fonts)
+            random_art = figlet_format(text, font=random_font, width=Ascii.verify_width())
+            random_art_chars = set(random_art)
+            if all(char in font_symbols for char in random_art_chars):
+                print(f"Found font: {random_font}")
+                print_figlet(text, font=random_font, colors=Global.color, width=Ascii.verify_width())
+                return
+            else:
+                fonts.remove(random_font)
+        print("No fonts were found, please try again with a wider set of characters")
 
     @staticmethod
     def change_font():
