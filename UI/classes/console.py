@@ -60,13 +60,13 @@ class Console:
         symbols = input("Enter a set of characters that should be in the ASCII art: ")
         font_symbols = set(symbols) | {" ", "\n"}
         fonts = FigletFont.getFonts()
-        fonts.remove('mshebrew210')
-        fonts.remove('runic')
         random.shuffle(fonts)
         for font in fonts:
             random_art = figlet_format(text, font=font, width=Global.width)
             random_art_chars = set(random_art)
-            if all(char in font_symbols for char in random_art_chars):
+            if all(char in font_symbols for char in [" ", "\n"]):
+                continue
+            elif all(char in font_symbols for char in random_art_chars):
                 print("Found font:" + font)
                 Global.font = font
                 Ascii.print(text)
