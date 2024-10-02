@@ -64,7 +64,7 @@ class Console:
         for font in fonts:
             random_art = figlet_format(text, font=font, width=Global.width)
             random_art_chars = set(random_art)
-            if all(char in font_symbols for char in [" ", "\n"]):
+            if all(char in [" ", "\n"] for char in random_art_chars):
                 continue
             elif all(char in font_symbols for char in random_art_chars):
                 print("Found font:" + font)

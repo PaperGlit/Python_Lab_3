@@ -6,6 +6,6 @@ try:
 except OSError:
     width = 220
 height = 0
-font = 'slant'
+font = None
 color = "\033[39m"
 color_reset = "\033[0m"
