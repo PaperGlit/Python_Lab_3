@@ -9,7 +9,7 @@ def file_upload(data):
                     f.write(data)
                 print("The art was uploaded successfully")
             except IOError:
-                print("An error occurred during file upload, please try again")
+                raise IOError
             return
         else:
             print("Please enter a valid file name")
