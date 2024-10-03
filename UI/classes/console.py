@@ -40,7 +40,10 @@ class Console:
         ftext = Ascii.print(text)
         save_prompt = input("Do you want to save the text? (y/n): ").lower()
         if save_prompt == "y":
-            file_upload(ftext)
+            try:
+                file_upload(ftext)
+            except IOError:
+                print("An error occurred during file upload, please try again")
 
     @staticmethod
     def auto_font():
@@ -60,7 +63,10 @@ class Console:
                 ftext = Ascii.print(text)
                 save_prompt = input("Do you want to save the text? (y/n): ").lower()
                 if save_prompt == "y":
-                    file_upload(ftext)
+                    try:
+                        file_upload(ftext)
+                    except IOError:
+                        print("An error occurred during file upload, please try again")
                 return
         print("No fonts were found, please try again with a wider set of characters")
 
