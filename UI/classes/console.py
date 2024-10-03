@@ -3,7 +3,7 @@ import textwrap
 import GlobalVariables as Global
 from BLL.classes.ascii import Ascii
 from pyfiglet import FigletFont, figlet_format
-import DAL.functions.upload_to_file as file_upload
+from DAL.functions.upload_to_file import file_upload
 
 
 class Console:
@@ -40,19 +40,7 @@ class Console:
         ftext = Ascii.print(text)
         save_prompt = input("Do you want to save the text? (y/n): ").lower()
         if save_prompt == "y":
-            while True:
-                file_name = input("Enter file name: ")
-                if file_name.strip() != "":
-                    if not file_name.endswith(".txt"):
-                        file_name += ".txt"
-                    try:
-                        file_upload.write(ftext, file_name)
-                        print("The art was uploaded successfully")
-                        break
-                    except IOError:
-                        print("An error occurred during file upload, please try again")
-                else:
-                    print("Please enter a valid file name")
+            file_upload(ftext)
 
     @staticmethod
     def auto_font():
@@ -69,7 +57,10 @@ class Console:
             elif all(char in font_symbols for char in random_art_chars):
                 print("Found font:" + font)
                 Global.font = font
-                Ascii.print(text)
+                ftext = Ascii.print(text)
+                save_prompt = input("Do you want to save the text? (y/n): ").lower()
+                if save_prompt == "y":
+                    file_upload(ftext)
                 return
         print("No fonts were found, please try again with a wider set of characters")
 
